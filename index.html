@@ -12,13 +12,13 @@ header{background:linear-gradient(110deg,rgba(22,25,24,.82),rgba(22,25,24,.25)),
 .wrap{width:min(1120px,92%);margin:auto}.hero{padding:70px 0}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:#f3d6b0;font-weight:700}.hero h1{font-family:Georgia,serif;font-size:clamp(38px,6vw,68px);line-height:1.03;max-width:700px;margin:16px 0}.hero p{max-width:560px;color:#f3eee7;font-size:18px}.pill{display:inline-block;border:1px solid rgba(255,255,255,.55);padding:8px 14px;border-radius:99px;margin:8px 7px 0 0;font-size:13px}
 nav{position:sticky;top:0;background:rgba(251,248,242,.96);backdrop-filter:blur(10px);z-index:5;border-bottom:1px solid var(--line)}
 .navinner{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 0;flex-wrap:wrap}.brand{font-weight:800;letter-spacing:.04em}.brand span{color:var(--red)}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:white;border-radius:99px;padding:8px 13px;cursor:pointer;color:var(--ink);font:inherit;font-size:14px}.tab.active,.tab:hover{background:var(--red);border-color:var(--red);color:white}
-main{padding:44px 0 70px}.intro{display:flex;justify-content:space-between;gap:25px;align-items:end;margin-bottom:22px}.intro h2{font: bold clamp(28px,4vw,40px)/1.1 Georgia,serif;margin:0}.intro p{color:var(--muted);max-width:510px;margin:0}.tools{display:flex;gap:10px;margin:22px 0 28px}.tools input{width:100%;max-width:390px;border:1px solid var(--line);border-radius:12px;padding:12px 15px;font:inherit;background:white}
+main{padding:44px 0 70px}.intro{display:flex;justify-content:space-between;gap:25px;align-items:end;margin-bottom:22px}.intro h2{font: bold clamp(28px,4vw,40px)/1.1 Georgia,serif;margin:0}.intro p{color:var(--muted);max-width:510px;margin:0}.tools{display:flex;gap:10px;margin:22px 0 10px;flex-wrap:wrap}.tools input{flex:1 1 260px;min-width:220px;max-width:390px;border:1px solid var(--line);border-radius:12px;padding:12px 15px;font:inherit;background:white}.tools select{flex:0 1 220px;min-width:180px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;background:white;color:var(--ink)}.resultsInfo{color:var(--muted);font-size:13px;margin:0 0 22px}.emptyState{display:none;padding:28px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);text-align:center;grid-column:1/-1}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 5px 18px rgba(50,35,20,.04);display:flex;flex-direction:column}.card img{width:100%;height:205px;object-fit:cover;background:#eee}.cardbody{padding:18px;display:flex;flex-direction:column;flex:1}.tag{color:var(--red);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}.card h3{font: bold 23px/1.15 Georgia,serif;margin:8px 0}.meta{display:flex;gap:14px;color:var(--muted);font-size:13px;margin:2px 0 10px}.card p{margin:0 0 14px;color:#5f5a52;font-size:14px}.mode{background:#f7f1e8;padding:9px 11px;border-radius:10px;font-size:13px;margin-top:auto}.more{margin-top:13px;border:0;background:none;color:var(--red);font-weight:800;text-align:left;padding:5px 0;cursor:pointer;font:inherit}
 .details{display:none;border-top:1px solid var(--line);padding-top:13px;margin-top:13px;font-size:14px}.details.open{display:block}.details h4{margin:12px 0 5px}.details ul,.details ol{padding-left:20px;margin:5px 0}.note{background:#fff7e9;border-left:3px solid var(--gold);padding:12px 15px;border-radius:8px;color:#5f5140;margin:30px 0}
 .model{background:#262724;color:#fff;padding:38px 0}.model h2{font: bold 32px Georgia,serif;margin:0 0 10px}.model p{color:#dedbd4;max-width:760px}.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}.modebox{border:1px solid #55564f;border-radius:12px;padding:13px}.modebox b{display:block;color:#f0c58f}.modebox span{font-size:13px;color:#d0cdc6}
 footer{padding:26px 0;color:var(--muted);font-size:13px}
 @media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.modes{grid-template-columns:repeat(2,1fr)}.intro{display:block}.intro p{margin-top:12px}}
-@media(max-width:560px){.grid{grid-template-columns:1fr}.card img{height:220px}.hero{padding:55px 0}.hero p{font-size:16px}.navinner{align-items:flex-start}.tabs{width:100%}.tab{font-size:12px;padding:7px 10px}.modes{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.card img{height:220px}.hero{padding:55px 0}.hero p{font-size:16px}.navinner{align-items:flex-start}.tabs{width:100%}.tab{font-size:12px;padding:7px 10px}.modes{grid-template-columns:1fr 1fr}.tools input,.tools select{width:100%;max-width:none;flex-basis:100%}}
 </style>
 </head>
 <body>
@@ -32,7 +32,12 @@ footer{padding:26px 0;color:var(--muted);font-size:13px}
 <button class="tab active" data-filter="all">Все рецепты</button><button class="tab" data-filter="Супы">Супы</button><button class="tab" data-filter="Вторые блюда">Вторые блюда</button><button class="tab" data-filter="Выпечка">Выпечка</button><button class="tab" data-filter="Десерты">Десерты</button></div></div></nav>
 <main class="wrap">
 <div class="intro"><h2 id="sectionTitle">Выбирайте, что приготовить</h2><span class="pill" style="color:var(--red);border-color:var(--line)">100 рецептов</span><p>Нажмите «Как приготовить», чтобы открыть ингредиенты и шаги. Время может немного меняться в зависимости от размера продуктов и их начальной температуры.</p></div>
-<div class="tools"><input id="search" type="search" placeholder="Найти рецепт или ингредиент…"></div>
+<div class="tools">
+<input id="search" type="search" placeholder="Найти рецепт или ингредиент…">
+<select id="typeFilter" aria-label="Вид блюда"><option value="all">Все виды блюд</option></select>
+<select id="difficultyFilter" aria-label="Сложность"><option value="all">Любая сложность</option><option value="Легко">Легко</option><option value="Средне">Средне</option><option value="Сложно">Сложно</option></select>
+</div>
+<div class="resultsInfo" id="resultsInfo" aria-live="polite">Показаны все 100 рецептов</div>
 <div class="grid" id="recipes">
 <article class="card" data-cat="Супы" data-name="куриный суп с вермишелью курица картофель морковь"><img src="https://loremflickr.com/640/420/food%2C%D0%BA%D1%83%D1%80%D0%B8%D0%BD%D1%8B%D0%B9%2C%D1%81%D1%83%D0%BF%2C%D1%81%2C%D0%B2%D0%B5%D1%80%D0%BC%D0%B8%D1%88%D0%B5%D0%BB%D1%8C%D1%8E?lock=1" alt="Куриный суп с вермишелью" loading="lazy" onerror="this.style.display='none'"><div class="cardbody"><div class="tag">Супы</div><h3>Куриный суп с вермишелью</h3><div class="meta">⏱ около 1 ч 15 мин · 4 порции</div><p>Домашний лёгкий суп с курицей, овощами и тонкой вермишелью.</p><div class="mode"><b>Режим:</b> «Суп» — ориентир 1 час; вермишель добавить ближе к концу.</div><button class="more">Как приготовить +</button><div class="details"><h4>Ингредиенты</h4><ul><li>Курица — 350 г</li><li>Картофель — 3 шт.</li><li>Морковь — 1 шт., лук — 1 шт.</li><li>Вермишель — 50 г, вода — 1,5 л</li><li>Соль, зелень — по вкусу</li></ul><h4>Шаги</h4><ol><li>Курицу нарезать порционными кусочками, овощи — кубиками.</li><li>Положить курицу, картофель, морковь и лук в чашу, залить водой. Не превышать отметку MAX.</li><li>Выбрать «Суп», установить около 1 часа и нажать «Старт».</li><li>За 7–10 минут до конца добавить вермишель и зелень. Проверить готовность курицы.</li></ol></div></div></article>
 <article class="card" data-cat="Супы" data-name="борщ свекла капуста говядина"><img src="https://loremflickr.com/640/420/food%2C%D0%B1%D0%BE%D1%80%D1%89%2C%D0%B4%D0%BE%D0%BC%D0%B0%D1%88%D0%BD%D0%B8%D0%B9?lock=2" alt="Борщ домашний" loading="lazy" onerror="this.style.display='none'"><div class="cardbody"><div class="tag">Супы</div><h3>Борщ домашний</h3><div class="meta">⏱ около 1 ч 40 мин · 5 порций</div><p>Насыщенный борщ с говядиной, свёклой и капустой.</p><div class="mode"><b>Режим:</b> «Суп» — 1 ч 30 мин; при необходимости продлить.</div><button class="more">Как приготовить +</button><div class="details"><h4>Ингредиенты</h4><ul><li>Говядина — 350 г</li><li>Свёкла — 1 шт., картофель — 3 шт.</li><li>Капуста — 200 г, морковь — 1 шт., лук — 1 шт.</li><li>Томатная паста — 1,5 ст. л., вода — 1,7 л</li><li>Соль, лавровый лист, масло</li></ul><h4>Шаги</h4><ol><li>Лук и морковь слегка обжарить в чаше на программе «Жарка овощей».</li><li>Добавить томатную пасту и натёртую свёклу, перемешать.</li><li>Положить мясо, картофель, капусту, специи и воду.</li><li>Готовить на «Суп» примерно 1 ч 30 мин. Проверить мягкость мяса; при необходимости добавить время.</li></ol></div></div></article>
@@ -63,10 +68,75 @@ footer{padding:26px 0;color:var(--muted);font-size:13px}
 <footer><div class="wrap">Домашняя подборка рецептов для REDMOND RMC-M45011. Фотографии загружаются из интернета; для их отображения нужно подключение к сети. Рецепты адаптированы как практические ориентиры — сверяйтесь с руководством прибора.</div></footer>
 <script>
 const cards=[...document.querySelectorAll('.card')], tabs=[...document.querySelectorAll('.tab')], search=document.getElementById('search');
+const typeFilter=document.getElementById('typeFilter'), difficultyFilter=document.getElementById('difficultyFilter'), resultsInfo=document.getElementById('resultsInfo');
 let category='all';
-function update(){const q=search.value.trim().toLowerCase();cards.forEach(c=>{const okCat=category==='all'||c.dataset.cat===category;const okQ=!q||c.dataset.name.includes(q)||c.innerText.toLowerCase().includes(q);c.style.display=okCat&&okQ?'flex':'none';});}
-tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');category=t.dataset.filter;document.getElementById('sectionTitle').textContent=category==='all'?'Выбирайте, что приготовить':category;update();}));
+function getDishType(card){
+ const cat=card.dataset.cat, title=card.querySelector('h3').innerText.toLowerCase(), body=card.innerText.toLowerCase();
+ if(cat==='Супы') return 'Супы';
+ if(cat==='Выпечка'){
+  if(/запеканк|пудинг/.test(title)) return 'Запеканки';
+  if(/кекс|маффин/.test(title)) return 'Кексы и маффины';
+  if(/хлеб|леп[её]шк/.test(title)) return 'Хлеб и лепёшки';
+  return 'Пироги и выпечка';
+ }
+ if(cat==='Десерты'){
+  if(/компот|кисель|напит|морс/.test(title)) return 'Напитки';
+  if(/каша/.test(title)) return 'Сладкие каши';
+  if(/мусс|суфле|крем|пудинг/.test(title)) return 'Муссы и кремы';
+  return 'Фруктовые и другие десерты';
+ }
+ if(/рыб|лосос|форел|треск|минтай|горбуш|хек/.test(title+' '+body)) return 'Рыба и морепродукты';
+ if(/куриц|индейк|утк|курин|цыпл/.test(title+' '+body)) return 'Блюда из птицы';
+ if(/говядин|свинин|свини|баранин|теляти|мясн|котлет|тефтел|гуляш/.test(title+' '+body)) return 'Мясные блюда';
+ if(/рис|греч|макарон|паст|перлов|пшен|булгур|киноа|гарнир/.test(title)) return 'Крупы и гарниры';
+ if(/овощ|картоф|кабач|баклаж|капуст|фасол/.test(title)) return 'Овощные блюда';
+ if(/запеканк/.test(title)) return 'Запеканки';
+ return 'Другие вторые блюда';
+}
+function getDifficulty(card){
+ const details=card.querySelector('.details');
+ const ingredients=details?details.querySelectorAll('ul li').length:0;
+ const steps=details?details.querySelectorAll('ol li').length:0;
+ const text=(card.innerText+' '+(details?details.innerText:'')).toLowerCase();
+ let score=ingredients*0.7+steps*0.9;
+ if(/дрожж|опара|расстойк|карамел|су-вид|фаршир/.test(text)) score+=3;
+ if(/обжар|отдельно|затем|после этого/.test(text)) score+=1;
+ if(ingredients>=9) score+=1;
+ if(score<=9) return 'Легко';
+ if(score<=14) return 'Средне';
+ return 'Сложно';
+}
+const typeNames=[...new Set(cards.map(c=>{const t=getDishType(c);c.dataset.type=t;c.dataset.difficulty=getDifficulty(c);return t;}))].sort((a,b)=>a.localeCompare(b,'ru'));
+typeNames.forEach(name=>{const option=document.createElement('option');option.value=name;option.textContent=name;typeFilter.append(option);});
+const empty=document.createElement('div');empty.className='emptyState';empty.textContent='По выбранным фильтрам ничего не найдено. Измените вид блюда, сложность или поисковый запрос.';document.getElementById('recipes').append(empty);
+function update(){
+ const q=search.value.trim().toLowerCase(), type=typeFilter.value, difficulty=difficultyFilter.value;
+ let visible=0;
+ cards.forEach(c=>{
+  const okCat=category==='all'||c.dataset.cat===category;
+  const okQ=!q||c.dataset.name.includes(q)||c.innerText.toLowerCase().includes(q);
+  const okType=type==='all'||c.dataset.type===type;
+  const okDifficulty=difficulty==='all'||c.dataset.difficulty===difficulty;
+  const show=okCat&&okQ&&okType&&okDifficulty;
+  c.style.display=show?'flex':'none';
+  if(show) visible++;
+ });
+ empty.style.display=visible?'none':'block';
+ resultsInfo.textContent='Найдено рецептов: '+visible+' из '+cards.length;
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{
+ tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');
+ category=t.dataset.filter;
+ document.getElementById('sectionTitle').textContent=category==='all'?'Выбирайте, что приготовить':category;
+ update();
+}));
 search.addEventListener('input',update);
-document.querySelectorAll('.more').forEach(b=>b.addEventListener('click',()=>{const d=b.nextElementSibling;d.classList.toggle('open');b.textContent=d.classList.contains('open')?'Свернуть рецепт −':'Как приготовить +';}));
-</script>
+typeFilter.addEventListener('change',update);
+difficultyFilter.addEventListener('change',update);
+document.querySelectorAll('.more').forEach(b=>b.addEventListener('click',()=>{
+ const d=b.nextElementSibling;d.classList.toggle('open');
+ b.textContent=d.classList.contains('open')?'Свернуть рецепт −':'Как приготовить +';
+}));
+update();
+</script>>
 </body></html>
