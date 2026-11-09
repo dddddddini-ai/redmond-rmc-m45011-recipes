@@ -83,7 +83,8 @@ const typeFilter=document.getElementById('typeFilter'), difficultyFilter=documen
 let category='all';
 function getDishType(card){
  const cat=card.dataset.cat, title=card.querySelector('h3').innerText.toLowerCase(), body=card.innerText.toLowerCase();
- if(cat==='Супы') return 'Супы';\n if(cat==='Тесто для мультиварки') return 'Выпечка в мультиварке';
+ if(cat==='Супы') return 'Супы';
+ if(cat==='Тесто для мультиварки') return 'Выпечка в мультиварке';
  if(cat==='Заготовки'){
   if(/тесто/.test(title)) return 'Виды теста';
   if(/бульон/.test(title)) return 'Бульоны';
