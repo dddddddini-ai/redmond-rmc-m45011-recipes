@@ -9,7 +9,7 @@
 :root{--ink:#24231f;--muted:#77746d;--cream:#fbf8f2;--paper:#fff;--red:#b84d3d;--gold:#d8a45c;--line:#eee6db}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 header{background:linear-gradient(110deg,rgba(22,25,24,.82),rgba(22,25,24,.25)),url('https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1800&q=85') center/cover;color:#fff;min-height:420px;display:flex;align-items:center}
-.wrap{width:min(1120px,92%);margin:auto}.hero{padding:70px 0}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:#f3d6b0;font-weight:700}.hero h1{font-family:Georgia,serif;font-size:clamp(38px,6vw,68px);line-height:1.03;max-width:700px;margin:16px 0}.hero p{max-width:560px;color:#f3eee7;font-size:18px}.pill{display:inline-block;border:1px solid rgba(255,255,255,.55);padding:8px 14px;border-radius:99px;margin:8px 7px 0 0;font-size:13px}
+.wrap{width:min(1120px,92%);margin:auto}.hero{padding:70px 0}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:#f3d6b0;font-weight:700}.hero h1{font-family:Georgia,serif;font-size:clamp(38px,6vw,68px);line-height:1.03;max-width:700px;margin:16px 0}.hero p{max-width:560px;color:#f3eee7;font-size:18px}.pill{display:inline-block;border:1px solid rgba(255,255,255,.55);padding:8px 14px;border-radius:99px;margin:8px 7px 0 0;font-size:13px}.hero-filter{appearance:none;background:rgba(255,255,255,.08);color:#fff;font:inherit;cursor:pointer;touch-action:manipulation;position:relative;z-index:2}.hero-filter:hover,.hero-filter:focus-visible{background:rgba(255,255,255,.24);outline:2px solid rgba(255,255,255,.8);outline-offset:2px}
 nav{position:sticky;top:0;z-index:1000;isolation:isolate;touch-action:manipulation;background:rgba(251,248,242,.97);backdrop-filter:blur(12px);z-index:20;border-bottom:1px solid var(--line);box-shadow:0 4px 16px rgba(30,20,10,.06)}
 .navinner{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:10px 0;flex-wrap:nowrap}.brand{font-weight:900;letter-spacing:.04em;white-space:nowrap}.brand span{color:var(--red)}
 .navtoggle{display:none;border:1px solid var(--line);background:white;border-radius:10px;padding:9px 12px;font:inherit;font-weight:700;color:var(--ink);cursor:pointer}
@@ -32,7 +32,7 @@ footer{padding:26px 0;color:var(--muted);font-size:13px}
 <div class="eyebrow">Домашняя кухня • 135 рецептов и заготовок для вашей модели</div>
 <h1>Готовим с REDMOND RMC-M45011</h1>
 <p>Рецепты и полезные заготовки для вашей мультиварки: продукты, пошаговое приготовление и подходящий режим — всё в одном месте.</p>
-<div><span class="pill">Супы</span><span class="pill">Вторые блюда</span><span class="pill">Выпечка</span><span class="pill">Десерты</span><span class="pill">Заготовки</span><span class="pill">Тесто и выпечка RMC</span></div>
+<div class="hero-actions"><button type="button" class="pill hero-filter" data-filter="Супы">Супы</button><button type="button" class="pill hero-filter" data-filter="Вторые блюда">Вторые блюда</button><button type="button" class="pill hero-filter" data-filter="Выпечка">Выпечка</button><button type="button" class="pill hero-filter" data-filter="Десерты">Десерты</button><button type="button" class="pill hero-filter" data-filter="Заготовки">Заготовки</button><button type="button" class="pill hero-filter" data-filter="Тесто для мультиварки">Тесто и выпечка RMC</button></div>
 </div></header>
 <nav aria-label="Главное меню"><div class="wrap navinner"><div class="brand">RMC<span>•</span>КУХНЯ</div><button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="mainTabs">☰ Меню</button><div class="tabs" id="mainTabs">
 <button class="tab active" data-filter="all">Все рецепты</button><button class="tab" data-filter="Супы">Супы</button><button class="tab" data-filter="Вторые блюда">Вторые блюда</button><button class="tab" data-filter="Выпечка">Выпечка</button><button class="tab" data-filter="Десерты">Десерты</button><button class="tab" data-filter="Заготовки">Заготовки</button><button class="tab" data-filter="Тесто для мультиварки">Тесто и выпечка RMC</button></div></div></nav>
@@ -152,15 +152,28 @@ footer{padding:26px 0;color:var(--muted);font-size:13px}
       if(empty) empty.style.display=shown?'none':'block';
       if(count) count.textContent='Найдено: '+shown+' из '+cards.length+' карточек';
     }
+    function selectCategory(category,label){
+      activeCategory=category||'all';
+      tabs.forEach(function(t){
+        const selected=(t.getAttribute('data-filter')||'all')===activeCategory;
+        t.classList.toggle('active',selected);
+      });
+      const heading=root.getElementById('sectionTitle');
+      if(heading) heading.textContent=activeCategory==='all'?'Выбирайте, что приготовить':(label||activeCategory);
+      applyFilters();
+    }
     tabs.forEach(function(tab){
       tab.addEventListener('click',function(ev){
         ev.preventDefault();
-        tabs.forEach(function(t){t.classList.remove('active');});
-        tab.classList.add('active');
-        activeCategory=tab.getAttribute('data-filter')||'all';
-        const heading=root.getElementById('sectionTitle');
-        if(heading) heading.textContent=activeCategory==='all'?'Выбирайте, что приготовить':tab.textContent.trim();
-        applyFilters();
+        selectCategory(tab.getAttribute('data-filter'),tab.textContent.trim());
+      });
+    });
+    root.querySelectorAll('.hero-filter').forEach(function(button){
+      button.addEventListener('click',function(ev){
+        ev.preventDefault();
+        selectCategory(button.getAttribute('data-filter'),button.textContent.trim());
+        const target=root.getElementById('recipes');
+        if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
       });
     });
     if(search) search.addEventListener('input',applyFilters);
