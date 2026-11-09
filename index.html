@@ -10,7 +10,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 header{background:linear-gradient(110deg,rgba(22,25,24,.82),rgba(22,25,24,.25)),url('https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1800&q=85') center/cover;color:#fff;min-height:420px;display:flex;align-items:center}
 .wrap{width:min(1120px,92%);margin:auto}.hero{padding:70px 0}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:#f3d6b0;font-weight:700}.hero h1{font-family:Georgia,serif;font-size:clamp(38px,6vw,68px);line-height:1.03;max-width:700px;margin:16px 0}.hero p{max-width:560px;color:#f3eee7;font-size:18px}.pill{display:inline-block;border:1px solid rgba(255,255,255,.55);padding:8px 14px;border-radius:99px;margin:8px 7px 0 0;font-size:13px}
-nav{position:sticky;top:0;background:rgba(251,248,242,.97);backdrop-filter:blur(12px);z-index:20;border-bottom:1px solid var(--line);box-shadow:0 4px 16px rgba(30,20,10,.06)}
+nav{position:sticky;top:0;z-index:1000;isolation:isolate;touch-action:manipulation;background:rgba(251,248,242,.97);backdrop-filter:blur(12px);z-index:20;border-bottom:1px solid var(--line);box-shadow:0 4px 16px rgba(30,20,10,.06)}
 .navinner{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:10px 0;flex-wrap:nowrap}.brand{font-weight:900;letter-spacing:.04em;white-space:nowrap}.brand span{color:var(--red)}
 .navtoggle{display:none;border:1px solid var(--line);background:white;border-radius:10px;padding:9px 12px;font:inherit;font-weight:700;color:var(--ink);cursor:pointer}
 .tabs{display:flex;gap:7px;flex-wrap:wrap;align-items:center;justify-content:flex-end}.tab{border:1px solid var(--line);background:white;border-radius:99px;padding:8px 12px;cursor:pointer;color:var(--ink);font:inherit;font-size:13px;white-space:nowrap}.tab.active,.tab:hover{background:var(--red);border-color:var(--red);color:white}
@@ -76,86 +76,109 @@ footer{padding:26px 0;color:var(--muted);font-size:13px}
 </div></div></section>
 <footer><div class="wrap">Домашняя подборка рецептов для REDMOND RMC-M45011. Фотографии загружаются из интернета; для их отображения нужно подключение к сети. Рецепты адаптированы как практические ориентиры — сверяйтесь с руководством прибора.</div></footer>
 <script>
-const cards=[...document.querySelectorAll('.card')], tabs=[...document.querySelectorAll('.tab')], search=document.getElementById('search');
-const navToggle=document.getElementById('navToggle'), mainTabs=document.getElementById('mainTabs');
-if(navToggle){navToggle.addEventListener('click',()=>{const opened=mainTabs.classList.toggle('open');navToggle.setAttribute('aria-expanded',String(opened));navToggle.textContent=opened?'✕ Закрыть':'☰ Меню';});}
-const typeFilter=document.getElementById('typeFilter'), difficultyFilter=document.getElementById('difficultyFilter'), resultsInfo=document.getElementById('resultsInfo');
-let category='all';
-function getDishType(card){
- const cat=card.dataset.cat, title=card.querySelector('h3').innerText.toLowerCase(), body=card.innerText.toLowerCase();
- if(cat==='Супы') return 'Супы';
- if(cat==='Тесто для мультиварки') return 'Выпечка в мультиварке';
- if(cat==='Заготовки'){
-  if(/тесто/.test(title)) return 'Виды теста';
-  if(/бульон/.test(title)) return 'Бульоны';
-  if(/зажарка|овощная основа/.test(title)) return 'Овощные заготовки';
-  if(/начинк/.test(title)) return 'Начинки';
-  return 'Фруктовые заготовки';
- }
- if(cat==='Выпечка'){
-  if(/запеканк|пудинг/.test(title)) return 'Запеканки';
-  if(/кекс|маффин/.test(title)) return 'Кексы и маффины';
-  if(/хлеб|леп[её]шк/.test(title)) return 'Хлеб и лепёшки';
-  return 'Пироги и выпечка';
- }
- if(cat==='Десерты'){
-  if(/компот|кисель|напит|морс/.test(title)) return 'Напитки';
-  if(/каша/.test(title)) return 'Сладкие каши';
-  if(/мусс|суфле|крем|пудинг/.test(title)) return 'Муссы и кремы';
-  return 'Фруктовые и другие десерты';
- }
- if(/рыб|лосос|форел|треск|минтай|горбуш|хек/.test(title+' '+body)) return 'Рыба и морепродукты';
- if(/куриц|индейк|утк|курин|цыпл/.test(title+' '+body)) return 'Блюда из птицы';
- if(/говядин|свинин|свини|баранин|теляти|мясн|котлет|тефтел|гуляш/.test(title+' '+body)) return 'Мясные блюда';
- if(/рис|греч|макарон|паст|перлов|пшен|булгур|киноа|гарнир/.test(title)) return 'Крупы и гарниры';
- if(/овощ|картоф|кабач|баклаж|капуст|фасол/.test(title)) return 'Овощные блюда';
- if(/запеканк/.test(title)) return 'Запеканки';
- return 'Другие вторые блюда';
-}
-function getDifficulty(card){
- const details=card.querySelector('.details');
- const ingredients=details?details.querySelectorAll('ul li').length:0;
- const steps=details?details.querySelectorAll('ol li').length:0;
- const text=(card.innerText+' '+(details?details.innerText:'')).toLowerCase();
- let score=ingredients*0.7+steps*0.9;
- if(/дрожж|опара|расстойк|карамел|су-вид|фаршир/.test(text)) score+=3;
- if(/обжар|отдельно|затем|после этого/.test(text)) score+=1;
- if(ingredients>=9) score+=1;
- if(score<=9) return 'Легко';
- if(score<=14) return 'Средне';
- return 'Сложно';
-}
-const typeNames=[...new Set(cards.map(c=>{const t=getDishType(c);c.dataset.type=t;c.dataset.difficulty=getDifficulty(c);return t;}))].sort((a,b)=>a.localeCompare(b,'ru'));
-typeNames.forEach(name=>{const option=document.createElement('option');option.value=name;option.textContent=name;typeFilter.append(option);});
-const empty=document.createElement('div');empty.className='emptyState';empty.textContent='По выбранным фильтрам ничего не найдено. Измените вид блюда, сложность или поисковый запрос.';document.getElementById('recipes').append(empty);
-function update(){
- const q=search.value.trim().toLowerCase(), type=typeFilter.value, difficulty=difficultyFilter.value;
- let visible=0;
- cards.forEach(c=>{
-  const okCat=category==='all'||c.dataset.cat===category;
-  const okQ=!q||c.dataset.name.includes(q)||c.innerText.toLowerCase().includes(q);
-  const okType=type==='all'||c.dataset.type===type;
-  const okDifficulty=difficulty==='all'||c.dataset.difficulty===difficulty;
-  const show=okCat&&okQ&&okType&&okDifficulty;
-  c.style.display=show?'flex':'none';
-  if(show) visible++;
- });
- empty.style.display=visible?'none':'block';
- resultsInfo.textContent='Найдено: '+visible+' из '+cards.length+' карточек';
-}
-tabs.forEach(t=>t.addEventListener('click',()=>{
- tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');
- category=t.dataset.filter;
- document.getElementById('sectionTitle').textContent=category==='all'?'Выбирайте, что приготовить':category;
- update();
-}));
-search.addEventListener('input',update);
-typeFilter.addEventListener('change',update);
-difficultyFilter.addEventListener('change',update);
-document.querySelectorAll('.more').forEach(b=>b.addEventListener('click',()=>{
- const d=b.nextElementSibling;d.classList.toggle('open');
- b.textContent=d.classList.contains('open')?'Свернуть рецепт −':'Как приготовить +';
-}));
-update();
+
+(function(){
+  function init(){
+    const root=document;
+    const cards=Array.from(root.querySelectorAll('.card'));
+    const tabs=Array.from(root.querySelectorAll('.tab'));
+    const menuButton=root.getElementById('navToggle');
+    const menu=root.getElementById('mainTabs');
+    const search=root.getElementById('search');
+    const typeSelect=root.getElementById('typeFilter');
+    const difficultySelect=root.getElementById('difficultyFilter');
+    const count=root.getElementById('resultsInfo');
+    const empty=root.querySelector('.emptyState') || (function(){
+      const el=root.createElement('div'); el.className='emptyState';
+      el.textContent='По выбранным условиям ничего не найдено.';
+      const grid=root.getElementById('recipes'); if(grid) grid.appendChild(el);
+      return el;
+    })();
+    let activeCategory='all';
+
+    function setMenu(open){
+      if(!menu || !menuButton) return;
+      menu.classList.toggle('open',!!open);
+      menuButton.setAttribute('aria-expanded',String(!!open));
+      menuButton.textContent=open?'✕ Закрыть':'☰ Меню';
+    }
+    if(menuButton && menu){
+      menuButton.addEventListener('click',function(ev){
+        ev.preventDefault(); ev.stopPropagation();
+        setMenu(!menu.classList.contains('open'));
+      });
+      menu.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click',function(){ if(window.matchMedia('(max-width:760px)').matches) setMenu(false); });
+      });
+    }
+
+    function dishType(card){
+      const cat=card.getAttribute('data-cat')||'';
+      if(cat==='Супы') return 'Супы';
+      if(cat==='Тесто для мультиварки') return 'Выпечка в мультиварке';
+      if(cat==='Выпечка') return 'Выпечка';
+      if(cat==='Десерты') return 'Десерты';
+      if(cat==='Заготовки') return 'Заготовки';
+      return 'Вторые блюда';
+    }
+    function difficulty(card){
+      const text=(card.textContent||'').toLowerCase();
+      const n=card.querySelectorAll('.details ul li').length + card.querySelectorAll('.details ol li').length;
+      if(/дрожж|расстойк|опара|фаршир/.test(text)||n>15) return 'Сложно';
+      if(n>9) return 'Средне';
+      return 'Легко';
+    }
+    if(typeSelect){
+      const values=Array.from(new Set(cards.map(dishType)));
+      typeSelect.innerHTML='<option value="all">Все виды блюд</option>';
+      values.forEach(function(v){const o=root.createElement('option');o.value=v;o.textContent=v;typeSelect.appendChild(o);});
+    }
+
+    function applyFilters(){
+      const q=search?(search.value||'').trim().toLocaleLowerCase('ru'):'';
+      const type=typeSelect?typeSelect.value:'all';
+      const level=difficultySelect?difficultySelect.value:'all';
+      let shown=0;
+      cards.forEach(function(card){
+        const cat=card.getAttribute('data-cat')||'';
+        const hay=((card.getAttribute('data-name')||'')+' '+(card.textContent||'')).toLocaleLowerCase('ru');
+        const visible=(activeCategory==='all'||cat===activeCategory) &&
+          (!q||hay.includes(q)) &&
+          (type==='all'||dishType(card)===type) &&
+          (level==='all'||difficulty(card)===level);
+        card.style.display=visible?'flex':'none';
+        if(visible) shown++;
+      });
+      if(empty) empty.style.display=shown?'none':'block';
+      if(count) count.textContent='Найдено: '+shown+' из '+cards.length+' карточек';
+    }
+    tabs.forEach(function(tab){
+      tab.addEventListener('click',function(ev){
+        ev.preventDefault();
+        tabs.forEach(function(t){t.classList.remove('active');});
+        tab.classList.add('active');
+        activeCategory=tab.getAttribute('data-filter')||'all';
+        const heading=root.getElementById('sectionTitle');
+        if(heading) heading.textContent=activeCategory==='all'?'Выбирайте, что приготовить':tab.textContent.trim();
+        applyFilters();
+      });
+    });
+    if(search) search.addEventListener('input',applyFilters);
+    if(typeSelect) typeSelect.addEventListener('change',applyFilters);
+    if(difficultySelect) difficultySelect.addEventListener('change',applyFilters);
+    root.querySelectorAll('.more').forEach(function(button){
+      button.addEventListener('click',function(ev){
+        ev.preventDefault();
+        const details=button.nextElementSibling;
+        if(!details) return;
+        const opened=details.classList.toggle('open');
+        button.textContent=opened?'Свернуть рецепт −':'Как приготовить +';
+      });
+    });
+    applyFilters();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
 </script>
 </body></html>
