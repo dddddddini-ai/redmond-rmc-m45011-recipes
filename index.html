@@ -165,6 +165,43 @@ main.show-recipes .intro{display:flex}
 @media(max-width:560px){.hero-actions{gap:8px;margin-top:21px}.hero-actions .pill.hero-filter{min-height:40px;padding:8px 14px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){.hero-actions .pill.hero-filter{transition:none}.hero-actions .pill.hero-filter:hover{transform:none}}
 
+
+
+
+/* Visible premium glass pills on the hero photo */
+.hero-actions{display:flex!important;flex-wrap:wrap;gap:12px;margin-top:28px;max-width:780px}
+.hero-actions .pill.hero-filter{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:inline-flex!important;align-items:center;justify-content:center;
+  min-height:46px;padding:11px 21px;margin:0!important;
+  border:1px solid rgba(226,244,255,.88)!important;border-radius:999px!important;
+  color:#fff!important;
+  background:linear-gradient(115deg,rgba(210,235,255,.38),rgba(53,119,171,.76) 48%,rgba(9,39,70,.88))!important;
+  box-shadow:0 8px 22px rgba(0,12,28,.38),inset 0 1px 1px rgba(255,255,255,.55),0 0 0 1px rgba(181,220,249,.15)!important;
+  backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);
+  font:700 14px/1.1 system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  letter-spacing:.015em;text-shadow:0 1px 3px rgba(0,20,40,.55);
+  cursor:pointer;touch-action:manipulation;
+  transition:transform .22s ease,box-shadow .22s ease,filter .22s ease,border-color .22s ease;
+}
+.hero-actions .pill.hero-filter:before{
+  content:"";position:absolute;z-index:-1;inset:1px;border-radius:inherit;
+  background:linear-gradient(110deg,rgba(255,255,255,.24),transparent 42%,rgba(255,255,255,.07));
+  pointer-events:none;
+}
+.hero-actions .pill.hero-filter:hover{
+  transform:translateY(-4px) scale(1.025);
+  border-color:#fff!important;filter:brightness(1.16);
+  box-shadow:0 13px 28px rgba(0,10,25,.48),0 0 22px rgba(150,210,250,.45),inset 0 1px 1px rgba(255,255,255,.72)!important;
+}
+.hero-actions .pill.hero-filter:active{transform:translateY(-1px) scale(.97)}
+.hero-actions .pill.hero-filter:focus-visible{outline:3px solid #dff2ff;outline-offset:4px}
+@media(max-width:560px){
+ .hero-actions{gap:9px;margin-top:22px}
+ .hero-actions .pill.hero-filter{min-height:43px;padding:10px 16px;font-size:13px!important}
+}
+@media(prefers-reduced-motion:reduce){.hero-actions .pill.hero-filter{transition:none}.hero-actions .pill.hero-filter:hover{transform:none}}
+
 </style>
 </head>
 <body>
@@ -192,7 +229,7 @@ main.show-recipes .intro{display:flex}
     <button class="category-card" data-filter="Вторые блюда"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=85" alt="Вторые блюда"><span>Вторые блюда</span></button>
     <button class="category-card" data-filter="Выпечка"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=85" alt="Выпечка"><span>Выпечка</span></button>
     <button class="category-card" data-filter="Десерты"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85" alt="Десерты"><span>Десерты</span></button>
-    <button class="category-card" data-filter="Заготовки"><img src="https://images.unsplash.com/photo-1608198093002-ad4e005484df?auto=format&fit=crop&w=900&q=85" alt="Заготовки"><span>Заготовки</span></button>
+    <button class="category-card" data-filter="Заготовки"><img src="https://loremflickr.com/900/600/preserves,jam,jars,pickles?lock=category-preserves" alt="Заготовки"><span>Заготовки</span></button>
     <button class="category-card" data-filter="Тесто для мультиварки"><img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=85" alt="Тесто"><span>Тесто и заготовки</span></button>
   </div>
 </section>
@@ -243,44 +280,13 @@ main.show-recipes .intro{display:flex}
   function init(){
     const root=document;
     const cards=Array.from(root.querySelectorAll('.card'));
-    // У каждой карточки своё изображение; не подменяем все блюда одной картинкой категории.
-    const photoPools={
-      'Супы':[
-        'photo-1547592180-85f173990554','photo-1547592166-23ac45744acd','photo-1547592116-6499b8e7b7c8','photo-1476718406336-bb5a9690ee2a','photo-1547592180-85f173990554'
-      ],
-      'Вторые блюда':[
-        'photo-1504674900247-0877df9cc836','photo-1540189549336-e6e99c3679fe','photo-1476224203421-9ac39bcb3327','photo-1546069901-ba9599a7e63c','photo-1490645935967-10de6ba17061','photo-1512621776951-a57141f2eefd','photo-1547592180-85f173990554'
-      ],
-      'Выпечка':[
-        'photo-1509440159596-0249088772ff','photo-1586444248902-2f64eddc13df','photo-1517433670267-08bbd4be890f','photo-1509440159596-0249088772ff','photo-1549931319-a545dcf3bc73'
-      ],
-      'Десерты':[
-        'photo-1578985545062-69928b1d9587','photo-1486427944299-d1955d23e34d','photo-1565958011703-44f9829ba187','photo-1488477181946-6428a0291777','photo-1484723091739-30a097e8f929'
-      ],
-      'Заготовки':[
-        'photo-1608198093002-ad4e005484df','photo-1505576399274-565b52d4ac71','photo-1490645935967-10de6ba17061','photo-1547592180-85f173990554'
-      ],
-      'Тесто для мультиварки':[
-        'photo-1555507036-ab1f4038808a','photo-1565299624946-b28f40a0ae38','photo-1571407970349-bc81e7e96d47','photo-1513104890138-7c749659a591','photo-1586444248902-2f64eddc13df'
-      ]
-    };
-    const photoIndex={};
+    // Не перезаписываем фотографии случайными снимками по категории.
+    // Для каждой карточки сохраняется собственный адрес изображения из её разметки.
     cards.forEach(function(card){
       const img=card.querySelector('img');
       if(!img) return;
-      const category=card.getAttribute('data-cat')||'Вторые блюда';
-      const pool=photoPools[category]||photoPools['Вторые блюда'];
-      const index=photoIndex[category]||0;
-      photoIndex[category]=index+1;
-      const photoId=pool[index%pool.length];
       img.loading='lazy';
       img.decoding='async';
-      img.src='https://images.unsplash.com/'+photoId+'?auto=format&fit=crop&w=900&q=82';
-      img.onerror=function(){
-        img.onerror=null;
-        img.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=900&q=80';
-      };
-      img.style.display='block';
     });
     const tabs=Array.from(root.querySelectorAll('.tab'));
     const menuButton=root.getElementById('navToggle');
