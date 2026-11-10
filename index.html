@@ -329,7 +329,7 @@ main.show-recipes .intro{display:flex}
   }
   async function findImage(title){
     const full=queryFor(title);
-    const words=full.split(/\\s+/).filter(Boolean);
+    const words=full.split(/\s+/).filter(Boolean);
     const queries=[full,words.slice(0,3).join(' '),words.slice(0,2).join(' ')].filter((q,i,a)=>q&&a.indexOf(q)===i);
     for(const q of queries){
       const url=api+'?action=query&generator=search&gsrnamespace=6&gsrsearch='+encodeURIComponent(q+' food')+'&gsrlimit=20&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=900&format=json&origin=*';
@@ -343,7 +343,7 @@ main.show-recipes .intro{display:flex}
       return {
         src:info.thumburl||info.url,
         page:info.descriptionurl||'https://commons.wikimedia.org/',
-        artist:(meta.Artist&&meta.Artist.value||'').replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').trim(),
+        artist:(meta.Artist&&meta.Artist.value||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),
         license:(meta.LicenseShortName&&meta.LicenseShortName.value||'Wikimedia Commons').replace(/<[^>]*>/g,' ').trim()
       };
     }
