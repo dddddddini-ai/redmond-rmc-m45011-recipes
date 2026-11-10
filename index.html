@@ -212,25 +212,43 @@ main.show-recipes .intro{display:flex}
   function init(){
     const root=document;
     const cards=Array.from(root.querySelectorAll('.card'));
-    // Replace the unavailable loremflickr image host with stable Unsplash CDN photos.
-    const foodPhotos={
-      'Супы':'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=82',
-      'Вторые блюда':'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=82',
-      'Выпечка':'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=82',
-      'Десерты':'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=82',
-      'Заготовки':'https://images.unsplash.com/photo-1608198093002-ad4e005484df?auto=format&fit=crop&w=900&q=82',
-      'Тесто для мультиварки':'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=82'
+    // У каждой карточки своё изображение; не подменяем все блюда одной картинкой категории.
+    const photoPools={
+      'Супы':[
+        'photo-1547592180-85f173990554','photo-1547592166-23ac45744acd','photo-1547592116-6499b8e7b7c8','photo-1476718406336-bb5a9690ee2a','photo-1547592180-85f173990554'
+      ],
+      'Вторые блюда':[
+        'photo-1504674900247-0877df9cc836','photo-1540189549336-e6e99c3679fe','photo-1476224203421-9ac39bcb3327','photo-1546069901-ba9599a7e63c','photo-1490645935967-10de6ba17061','photo-1512621776951-a57141f2eefd','photo-1547592180-85f173990554'
+      ],
+      'Выпечка':[
+        'photo-1509440159596-0249088772ff','photo-1586444248902-2f64eddc13df','photo-1517433670267-08bbd4be890f','photo-1509440159596-0249088772ff','photo-1549931319-a545dcf3bc73'
+      ],
+      'Десерты':[
+        'photo-1578985545062-69928b1d9587','photo-1486427944299-d1955d23e34d','photo-1565958011703-44f9829ba187','photo-1488477181946-6428a0291777','photo-1484723091739-30a097e8f929'
+      ],
+      'Заготовки':[
+        'photo-1608198093002-ad4e005484df','photo-1505576399274-565b52d4ac71','photo-1490645935967-10de6ba17061','photo-1547592180-85f173990554'
+      ],
+      'Тесто для мультиварки':[
+        'photo-1555507036-ab1f4038808a','photo-1565299624946-b28f40a0ae38','photo-1571407970349-bc81e7e96d47','photo-1513104890138-7c749659a591','photo-1586444248902-2f64eddc13df'
+      ]
     };
+    const photoIndex={};
     cards.forEach(function(card){
       const img=card.querySelector('img');
       if(!img) return;
-      const category=card.getAttribute('data-cat')||'';
-      const photo=foodPhotos[category]||foodPhotos['Вторые блюда'];
+      const category=card.getAttribute('data-cat')||'Вторые блюда';
+      const pool=photoPools[category]||photoPools['Вторые блюда'];
+      const index=photoIndex[category]||0;
+      photoIndex[category]=index+1;
+      const photoId=pool[index%pool.length];
+      img.loading='lazy';
+      img.decoding='async';
+      img.src='https://images.unsplash.com/'+photoId+'?auto=format&fit=crop&w=900&q=82';
       img.onerror=function(){
         img.onerror=null;
         img.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=900&q=80';
       };
-      img.src=photo;
       img.style.display='block';
     });
     const tabs=Array.from(root.querySelectorAll('.tab'));
