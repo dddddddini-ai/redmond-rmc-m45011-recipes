@@ -202,6 +202,7 @@ main.show-recipes .intro{display:flex}
 }
 @media(prefers-reduced-motion:reduce){.hero-actions .pill.hero-filter{transition:none}.hero-actions .pill.hero-filter:hover{transform:none}}
 
+ .photo-credit{padding:4px 12px 0;font-size:10px;line-height:1.35;color:#70849a;overflow-wrap:anywhere}.photo-credit a{color:#70849a;text-decoration:none}.photo-credit a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -327,15 +328,26 @@ main.show-recipes .intro{display:flex}
     return n;
   }
   async function findImage(title){
-    const q=queryFor(title);
-    const url=api+'?action=query&generator=search&gsrnamespace=6&gsrsearch='+encodeURIComponent(q+' food')+'&gsrlimit=18&prop=imageinfo&iiprop=url&iiurlwidth=900&format=json&origin=*';
-    const res=await fetch(url);
-    if(!res.ok) throw new Error('Commons request failed');
-    const data=await res.json();
-    const pages=Object.values((data.query&&data.query.pages)||{}).filter(p=>p.imageinfo&&p.imageinfo[0]&&(p.imageinfo[0].thumburl||p.imageinfo[0].url));
-    if(!pages.length) return null;
-    pages.sort((a,b)=>score(title,b.title)-score(title,a.title));
-    return pages[0].imageinfo[0].thumburl||pages[0].imageinfo[0].url;
+    const full=queryFor(title);
+    const words=full.split(/\\s+/).filter(Boolean);
+    const queries=[full,words.slice(0,3).join(' '),words.slice(0,2).join(' ')].filter((q,i,a)=>q&&a.indexOf(q)===i);
+    for(const q of queries){
+      const url=api+'?action=query&generator=search&gsrnamespace=6&gsrsearch='+encodeURIComponent(q+' food')+'&gsrlimit=20&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=900&format=json&origin=*';
+      const res=await fetch(url);
+      if(!res.ok) continue;
+      const data=await res.json();
+      const pages=Object.values((data.query&&data.query.pages)||{}).filter(p=>p.imageinfo&&p.imageinfo[0]&&(p.imageinfo[0].thumburl||p.imageinfo[0].url));
+      if(!pages.length) continue;
+      pages.sort((a,b)=>score(title,b.title)-score(title,a.title));
+      const page=pages[0], info=page.imageinfo[0], meta=info.extmetadata||{};
+      return {
+        src:info.thumburl||info.url,
+        page:info.descriptionurl||'https://commons.wikimedia.org/',
+        artist:(meta.Artist&&meta.Artist.value||'').replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').trim(),
+        license:(meta.LicenseShortName&&meta.LicenseShortName.value||'Wikimedia Commons').replace(/<[^>]*>/g,' ').trim()
+      };
+    }
+    return null;
   }
   async function run(){
     const cards=Array.from(document.querySelectorAll('.card'));
@@ -349,13 +361,21 @@ main.show-recipes .intro{display:flex}
         img.alt=title;
         img.dataset.photoStatus='searching';
         try{
-          const src=await findImage(title);
-          if(src){
-            img.src=src;
+          const photo=await findImage(title);
+          if(photo){
+            img.src=photo.src;
             img.dataset.photoStatus='loaded';
+            const credit=document.createElement('div');
+            credit.className='photo-credit';
+            const link=document.createElement('a');
+            link.href=photo.page; link.target='_blank'; link.rel='noopener noreferrer';
+            link.textContent='Фото: '+(photo.artist||'автор Wikimedia Commons')+' · '+photo.license;
+            credit.appendChild(link);
+            img.insertAdjacentElement('afterend',credit);
           }else{
             img.dataset.photoStatus='not-found';
             img.style.background='#dce7f0';
+            img.removeAttribute('src');
             img.title='Подходящее фото пока не найдено: '+title;
           }
         }catch(e){
