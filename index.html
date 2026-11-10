@@ -446,40 +446,6 @@ function recipeImageFallback(img){if(!img)return;img.onerror=null;img.removeAttr
 })();
 </script>
 
-<script>
-/* Strict dish-specific Commons lookup. Uncertain matches stay blank rather than showing unrelated photos. */
-(function(){
-const api='https://commons.wikimedia.org/w/api.php';
-const d={
-'куриный':'chicken','курица':'chicken','курицей':'chicken','суп':'soup','вермишелью':'noodle','лапшой':'noodle','лапши':'noodle','рисом':'rice','рисовая':'rice','рисовый':'rice','борщ':'borscht','свекольник':'beet','свёклой':'beet','свеклой':'beet','сырный':'cheese','сыром':'cheese','грибами':'mushroom','грибной':'mushroom','грибами':'mushroom','плов':'pilaf','говядина':'beef','говяжьи':'beef','говяжий':'beef','тушённая':'stew','тушеная':'stew','овощами':'vegetable','рыба':'fish','рыбные':'fish','рыбный':'fish','пару':'steamed','шарлотка':'charlotte','яблоками':'apple','яблочный':'apple','яблочная':'apple','яблок':'apple','шоколадный':'chocolate','шоколадная':'chocolate','шоколадное':'chocolate','кекс':'cake','кексы':'cake','творожная':'cottage cheese','творожный':'cottage cheese','творогом':'cottage cheese','запеканка':'casserole','сладкая':'sweet','каша':'porridge','кашу':'porridge','пшённая':'millet','пшено':'millet','тыквой':'pumpkin','тыквы':'pumpkin','тыквенный':'pumpkin','гороховый':'pea','копчёностями':'smoked','щи':'cabbage soup','капусты':'cabbage','капуста':'cabbage','рассольник':'pickle soup','перловкой':'barley','перловка':'barley','уха':'fish soup','красной':'salmon','фрикадельками':'meatballs','фрикадельки':'meatballs','чечевичный':'lentil','чечевица':'lentil','пюре':'puree','фасолевый':'bean','томатами':'tomato','брокколи':'broccoli','минестроне':'minestrone','индейкой':'turkey','индейка':'turkey','булгуром':'bulgur','цветной':'cauliflower','харчо':'kharcho','кабачков':'zucchini','кукурузный':'corn','кукурузная':'corn','пшеном':'millet','солянка':'solyanka','гречка':'buckwheat','гречневая':'buckwheat','голубцы':'cabbage rolls','тефтели':'meatballs','сметанном':'sour cream','картофель':'potato','картофелем':'potato','картофеля':'potato','свинина':'pork','свининой':'pork','черносливом':'prune','макароны':'pasta','голени':'drumstick','рагу':'stew','баклажаном':'eggplant','фаршированные':'stuffed','перцы':'pepper','горчичном':'mustard','карри':'curry','кокосовым':'coconut','котлеты':'cutlet','филе':'fillet','сливочном':'cream','азиатски':'asian','подливой':'gravy','лодочки':'zucchini boats','фаршем':'minced meat','омлет':'omelette','медовый':'honey','бисквит':'sponge cake','манник':'semolina cake','кефир':'kefir','банановый':'banana','бананом':'banana','лимонный':'lemon','лимоном':'lemon','пирог':'pie','грушами':'pear','груша':'pear','морковный':'carrot','изюмом':'raisin','вареньем':'jam','кокосовый':'coconut','ягодами':'berry','апельсиновый':'orange','черникой':'blueberry','овсяное':'oatmeal','печенье':'cookie','вишней':'cherry','молочная':'milk','овсяная':'oatmeal','яблоком':'apple','сиропе':'syrup','корицей':'cinnamon','десерт':'dessert','ягодный':'berry','бананы':'banana','кисель':'kissel','запечённая':'baked','запеченная':'baked','груша':'pear','пудинг':'pudding','кукурузная':'corn','повидло':'apple butter','клубничный':'strawberry','соус':'sauce','суфле':'souffle','айва':'quince','киноа':'quinoa','сливочно-рисовый':'rice','кокосом':'coconut','слива':'plum','сливы':'plum','мусс':'mousse','манки':'semolina','тесто':'dough','дрожжевое':'yeast','сдобное':'sweet dough','пиццы':'pizza','пицца':'pizza','пельменей':'dumpling','вареников':'vareniki','песочное':'shortcrust','блинное':'pancake','оладий':'pancake','домашней':'homemade','лапши':'noodle','бульон':'broth','мясной':'meat','овощной':'vegetable','зажарка':'saute','начинки':'filling','постное':'vegan','хлебное':'bread','хлеб':'bread','пшенично-ржаной':'rye wheat','молоком':'milk','слоёное':'puff pastry','слоеное':'puff pastry','заварное':'choux','пресное':'unleavened','сладкий':'sweet','белый':'white','дрожжевой':'yeast','сдобный':'sweet','холодной':'cold proof','пшеничный':'wheat','ржаной':'rye','закрытый':'covered','заливной':'savory','мягком':'soft'
-};
-const stop=new Set(['sweet','homemade','fresh','with','and','the','a','milk','food','baked','steamed','cooked','traditional','simple','soft','white']);
-const forbidden=/\b(book|books|person|people|portrait|man|woman|child|family|selfie|fashion|model|office|classroom|school|student|teacher|magazine|cover|poster|logo|illustration|drawing|diagram|interior|building|bookcase)\b/i;
-function tokens(t){return t.toLowerCase().replace(/[_-]/g,' ').replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean);}
-function translate(title){return [...new Set(title.toLocaleLowerCase('ru').replace(/[—–,()]/g,' ').split(/\s+/).map(w=>d[w]||'').filter(w=>w&&!stop.has(w)))];}
-async function find(title){
- const req=translate(title); if(req.length<2)return null;
- const u=api+'?action=query&generator=search&gsrnamespace=6&gsrsearch='+encodeURIComponent(req.join(' ')+' food')+'&gsrlimit=40&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=900&format=json&origin=*';
- const res=await fetch(u); if(!res.ok)return null; const data=await res.json();
- const pages=Object.values((data.query&&data.query.pages)||{}).filter(p=>p.imageinfo&&p.imageinfo[0]&&(p.imageinfo[0].thumburl||p.imageinfo[0].url));
- const ranked=pages.map(p=>({p,n:req.filter(w=>tokens(p.title).some(t=>t===w||t.startsWith(w)||w.startsWith(t))).length})).filter(x=>x.n>=2&&!forbidden.test(x.p.title)).sort((a,b)=>b.n-a.n);
- if(!ranked.length)return null;
- const p=ranked[0].p, inf=p.imageinfo[0], m=inf.extmetadata||{};
- return {src:inf.thumburl||inf.url,page:inf.descriptionurl||'https://commons.wikimedia.org/',credit:(m.Artist&&m.Artist.value||'Wikimedia Commons').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),license:(m.LicenseShortName&&m.LicenseShortName.value||'').replace(/<[^>]*>/g,' ').trim()};
-}
-async function run(){
- const cards=[...document.querySelectorAll('.card')]; let i=0;
- async function worker(){while(i<cards.length){const card=cards[i++],img=card.querySelector('img'),h=card.querySelector('h3');if(!img||!h||img.dataset.manualPhoto==='1')continue;
- const title=h.textContent.trim();img.alt=title;img.removeAttribute('src');img.dataset.photoStatus='searching';
- try{const p=await find(title);if(!p){img.dataset.photoStatus='not-found';img.style.background='#e7edf2';img.title='Подходящее фото не найдено — случайная картинка не подставляется';continue;}
- img.onerror=()=>{img.removeAttribute('src');img.dataset.photoStatus='not-found';img.style.background='#e7edf2';};
- img.onload=()=>img.dataset.photoStatus='loaded';img.src=p.src;
- const c=document.createElement('div');c.className='photo-credit';const a=document.createElement('a');a.href=p.page;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Фото: '+p.credit+(p.license?' · '+p.license:'');c.appendChild(a);img.insertAdjacentElement('afterend',c);
- }catch(e){img.dataset.photoStatus='not-found';img.style.background='#e7edf2';}}}
- await Promise.all(Array.from({length:3},worker));document.documentElement.dataset.recipePhotos='processed';
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
-})();
-</script>
+
 </body></html>
 <!-- Trigger GitHub Pages deployment: hero category pills verified -->
