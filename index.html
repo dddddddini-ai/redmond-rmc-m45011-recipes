@@ -275,159 +275,101 @@ main.show-recipes .intro{display:flex}
 </div></div></section>
 <footer><div class="wrap">Домашняя подборка рецептов для REDMOND RMC-M45011. Если фото отдельного рецепта не загрузится, сайт подставит тематическое фото его категории. Рецепты адаптированы как практические ориентиры — сверяйтесь с руководством прибора.</div></footer>
 <script>
-
-function recipeImageFallback(img){
-  if(!img || img.dataset.fallbackApplied==='1') return;
-  img.dataset.fallbackApplied='1';
-  const card=img.closest('.card');
-  const category=card ? (card.getAttribute('data-cat')||'') : '';
-  const fallback={
-    'Супы':'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85',
-    'Вторые блюда':'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=85',
-    'Выпечка':'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=85',
-    'Десерты':'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85',
-    'Заготовки':'https://images.unsplash.com/photo-1760368104013-3a52a7f4e07b?auto=format&fit=crop&w=900&q=85',
-    'Тесто для мультиварки':'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=85'
-  };
-  img.onerror=function(){img.onerror=null;img.style.display='block';img.style.background='#dce7f0';};
-  img.src=fallback[category]||fallback['Вторые блюда'];
-}
-
+/* Individual dish photography: each recipe searches Wikimedia Commons by its own title.
+   Images are selected from food-related file results, never replaced with a category photo. */
 (function(){
-  function init(){
-    const root=document;
-    const cards=Array.from(root.querySelectorAll('.card'));
-    // Не перезаписываем фотографии случайными снимками по категории.
-    // Для каждой карточки сохраняется собственный адрес изображения из её разметки.
-    cards.forEach(function(card){
-      const img=card.querySelector('img');
-      if(!img) return;
-      img.loading='lazy';
-      img.decoding='async';
-    });
-    const tabs=Array.from(root.querySelectorAll('.tab'));
-    const menuButton=root.getElementById('navToggle');
-    const menu=root.getElementById('mainTabs');
-    const search=root.getElementById('search');
-    const typeSelect=root.getElementById('typeFilter');
-    const difficultySelect=root.getElementById('difficultyFilter');
-    const count=root.getElementById('resultsInfo');
-    const empty=root.querySelector('.emptyState') || (function(){
-      const el=root.createElement('div'); el.className='emptyState';
-      el.textContent='По выбранным условиям ничего не найдено.';
-      const grid=root.getElementById('recipes'); if(grid) grid.appendChild(el);
-      return el;
-    })();
-    let activeCategory='all';
-    const main=root.querySelector('main');
-    function showRecipes(){if(main) main.classList.add('show-recipes');}
-    root.querySelectorAll('.category-card').forEach(function(tile){
-      tile.addEventListener('click',function(){
-        const category=tile.getAttribute('data-filter')||'all';
-        showRecipes();
-        selectCategory(category,tile.textContent.trim());
-        const section=root.getElementById('recipeSection');
-        if(section) section.scrollIntoView({behavior:'smooth',block:'start'});
-      });
-    });
-
-    function setMenu(open){
-      if(!menu || !menuButton) return;
-      menu.classList.toggle('open',!!open);
-      menuButton.setAttribute('aria-expanded',String(!!open));
-      menuButton.textContent=open?'✕ Закрыть':'☰ Меню';
-    }
-    if(menuButton && menu){
-      menuButton.addEventListener('click',function(ev){
-        ev.preventDefault(); ev.stopPropagation();
-        setMenu(!menu.classList.contains('open'));
-      });
-      menu.querySelectorAll('button').forEach(function(b){
-        b.addEventListener('click',function(){ if(window.matchMedia('(max-width:760px)').matches) setMenu(false); });
-      });
-    }
-
-    function dishType(card){
-      const cat=card.getAttribute('data-cat')||'';
-      if(cat==='Супы') return 'Супы';
-      if(cat==='Тесто для мультиварки') return 'Выпечка в мультиварке';
-      if(cat==='Выпечка') return 'Выпечка';
-      if(cat==='Десерты') return 'Десерты';
-      if(cat==='Заготовки') return 'Заготовки';
-      return 'Вторые блюда';
-    }
-    function difficulty(card){
-      const text=(card.textContent||'').toLowerCase();
-      const n=card.querySelectorAll('.details ul li').length + card.querySelectorAll('.details ol li').length;
-      if(/дрожж|расстойк|опара|фаршир/.test(text)||n>15) return 'Сложно';
-      if(n>9) return 'Средне';
-      return 'Легко';
-    }
-    if(typeSelect){
-      const values=Array.from(new Set(cards.map(dishType)));
-      typeSelect.innerHTML='<option value="all">Все виды блюд</option>';
-      values.forEach(function(v){const o=root.createElement('option');o.value=v;o.textContent=v;typeSelect.appendChild(o);});
-    }
-
-    function applyFilters(){
-      const q=search?(search.value||'').trim().toLocaleLowerCase('ru'):'';
-      const type=typeSelect?typeSelect.value:'all';
-      const level=difficultySelect?difficultySelect.value:'all';
-      let shown=0;
-      cards.forEach(function(card){
-        const cat=card.getAttribute('data-cat')||'';
-        const hay=((card.getAttribute('data-name')||'')+' '+(card.textContent||'')).toLocaleLowerCase('ru');
-        const visible=(activeCategory==='all'||cat===activeCategory) &&
-          (!q||hay.includes(q)) &&
-          (type==='all'||dishType(card)===type) &&
-          (level==='all'||difficulty(card)===level);
-        card.style.display=visible?'flex':'none';
-        if(visible) shown++;
-      });
-      if(empty) empty.style.display=shown?'none':'block';
-      if(count) count.textContent='Найдено: '+shown+' из '+cards.length+' карточек';
-    }
-    function selectCategory(category,label){
-      showRecipes();
-      activeCategory=category||'all';
-      tabs.forEach(function(t){
-        const selected=(t.getAttribute('data-filter')||'all')===activeCategory;
-        t.classList.toggle('active',selected);
-      });
-      const heading=root.getElementById('sectionTitle');
-      if(heading) heading.textContent=activeCategory==='all'?'Выбирайте, что приготовить':(label||activeCategory);
-      applyFilters();
-    }
-    tabs.forEach(function(tab){
-      tab.addEventListener('click',function(ev){
-        ev.preventDefault();
-        selectCategory(tab.getAttribute('data-filter'),tab.textContent.trim());
-      });
-    });
-    root.querySelectorAll('.hero-filter').forEach(function(button){
-      button.addEventListener('click',function(ev){
-        ev.preventDefault();
-        selectCategory(button.getAttribute('data-filter'),button.textContent.trim());
-        const target=root.getElementById('recipes');
-        if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
-      });
-    });
-    if(search) search.addEventListener('input',applyFilters);
-    if(typeSelect) typeSelect.addEventListener('change',applyFilters);
-    if(difficultySelect) difficultySelect.addEventListener('change',applyFilters);
-    root.querySelectorAll('.more').forEach(function(button){
-      button.addEventListener('click',function(ev){
-        ev.preventDefault();
-        const details=button.nextElementSibling;
-        if(!details) return;
-        const opened=details.classList.toggle('open');
-        button.textContent=opened?'Свернуть рецепт −':'Как приготовить +';
-      });
-    });
-    applyFilters();
+  const api='https://commons.wikimedia.org/w/api.php';
+  const dictionary={
+    'куриный':'chicken','курица':'chicken','суп':'soup','вермишелью':'noodles','лапшой':'noodles','рисом':'rice',
+    'борщ':'borscht','домашний':'homemade','сырный':'cheese','грибами':'mushrooms','грибной':'mushroom',
+    'плов':'pilaf','говядина':'beef','тушённая':'stew','тушеная':'stew','овощами':'vegetables','рыба':'fish',
+    'пару':'steamed','шарлотка':'apple cake','яблоками':'apples','шоколадный':'chocolate','кекс':'cake',
+    'творожная':'cottage cheese','запеканка':'casserole','сладкая':'sweet','рисовая':'rice','каша':'porridge',
+    'яблоки':'apples','мёдом':'honey','орехами':'nuts','пудинг':'pudding','гороховый':'pea','копчёностями':'smoked meat',
+    'щи':'cabbage soup','свежей':'fresh','капусты':'cabbage','рассольник':'pickle soup','перловкой':'barley',
+    'уха':'fish soup','красной':'red','фрикадельками':'meatballs','чечевичный':'lentil','перловкой':'barley',
+    'пюре':'puree','тыквы':'pumpkin','фасолевый':'bean','томатами':'tomato','брокколи':'broccoli',
+    'минестроне':'minestrone','индейкой':'turkey','булгуром':'bulgur','цветной':'cauliflower','харчо':'kharcho',
+    'свекольник':'beet soup','кабачков':'zucchini','кукурузный':'corn','пшеном':'millet','солянка':'solyanka',
+    'гречка':'buckwheat','голубцы':'cabbage rolls','ленивые':'lazy','тефтели':'meatballs','сметанном':'sour cream',
+    'картофель':'potato','картофелем':'potato','свинина':'pork','черносливом':'prunes','макароны':'pasta',
+    'перловка':'barley','голени':'drumsticks','рагу':'stew','баклажаном':'eggplant','фаршированные':'stuffed',
+    'перцы':'peppers','горчичном':'mustard','карри':'curry','кокосовым':'coconut','котлеты':'cutlets',
+    'тушёная':'braised','тушеная':'braised','филе':'fillet','сливочном':'cream','пшённая':'millet',
+    'азиатски':'asian','фрикадельки':'meatballs','подливой':'gravy','лодочки':'boats','фаршем':'minced meat',
+    'омлет':'omelette','выпечка':'baking','медовый':'honey','бисквит':'sponge cake','манник':'semolina cake',
+    'кефир':'kefir','банановый':'banana','лимонный':'lemon','пирог':'pie','грушами':'pears','морковный':'carrot',
+    'изюмом':'raisins','вареньем':'jam','кокосовый':'coconut','ягодами':'berries','апельсиновый':'orange',
+    'сырный':'cheese','курицей':'chicken','сметане':'sour cream','черникой':'blueberry','овсяное':'oat',
+    'печенье':'cookies','лимоном':'lemon','вишней':'cherry','кукурузный':'cornbread','молочная':'milk',
+    'овсяная':'oatmeal','бананом':'banana','яблоком':'apple','сиропе':'syrup','корицей':'cinnamon',
+    'десерт':'dessert','ягодный':'berry','карамельные':'caramelized','бананы':'bananas','кисель':'fruit kissel',
+    'запечённая':'baked','запеченная':'baked','груша':'pear','творогом':'cottage cheese','молочная':'milk',
+    'кукурузная':'corn','пюре':'puree','повидло':'apple butter','клубничный':'strawberry','соус':'sauce',
+    'суфле':'souffle','айва':'quince','киноа':'quinoa','сливочно-рисовый':'creamy rice','кокосом':'coconut',
+    'слива':'plum','сливы':'plums','мусс':'mousse','манки':'semolina','тесто':'dough','дрожжевое':'yeast',
+    'сдобное':'sweet enriched','пиццы':'pizza','пельменей':'dumpling','вареников':'vareniki','песочное':'shortcrust',
+    'блинное':'pancake','оладий':'pancake','лапши':'noodle','бисквитное':'sponge','бульон':'broth',
+    'куриный':'chicken','мясной':'meat','овощной':'vegetable','зажарка':'fried vegetables','начинки':'filling',
+    'постное':'vegan','хлебное':'bread','холодной':'cold proofed','слоёное':'puff pastry','слоеное':'puff pastry',
+    'заварное':'choux','пресное':'unleavened','хлеб':'bread','пшенично-ржаной':'wheat rye','молоком':'milk',
+    'заливной':'savory','пицца':'pizza','грибами':'mushrooms','специфический':''
+  };
+  function queryFor(title){
+    const words=title.toLocaleLowerCase('ru').replace(/[—–,()]/g,' ').split(/\s+/).filter(Boolean);
+    const translated=words.map(w=>dictionary[w]||'').filter(Boolean);
+    return translated.length?translated.join(' '):title;
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
-  else init();
+  function score(title, file){
+    const a=title.toLocaleLowerCase('ru').split(/\s+/).filter(w=>w.length>3);
+    const b=file.toLocaleLowerCase().replace(/[_-]/g,' ').split(/\s+/);
+    let n=0; a.forEach(w=>{if(b.some(x=>x.includes(w)||w.includes(x))) n+=2;});
+    return n;
+  }
+  async function findImage(title){
+    const q=queryFor(title);
+    const url=api+'?action=query&generator=search&gsrnamespace=6&gsrsearch='+encodeURIComponent(q+' food')+'&gsrlimit=18&prop=imageinfo&iiprop=url&iiurlwidth=900&format=json&origin=*';
+    const res=await fetch(url);
+    if(!res.ok) throw new Error('Commons request failed');
+    const data=await res.json();
+    const pages=Object.values((data.query&&data.query.pages)||{}).filter(p=>p.imageinfo&&p.imageinfo[0]&&(p.imageinfo[0].thumburl||p.imageinfo[0].url));
+    if(!pages.length) return null;
+    pages.sort((a,b)=>score(title,b.title)-score(title,a.title));
+    return pages[0].imageinfo[0].thumburl||pages[0].imageinfo[0].url;
+  }
+  async function run(){
+    const cards=Array.from(document.querySelectorAll('.card'));
+    let index=0, active=0;
+    async function worker(){
+      while(index<cards.length){
+        const card=cards[index++];
+        const img=card.querySelector('img'), heading=card.querySelector('h3');
+        if(!img||!heading) continue;
+        const title=heading.textContent.trim();
+        img.alt=title;
+        img.dataset.photoStatus='searching';
+        try{
+          const src=await findImage(title);
+          if(src){
+            img.src=src;
+            img.dataset.photoStatus='loaded';
+          }else{
+            img.dataset.photoStatus='not-found';
+            img.style.background='#dce7f0';
+            img.title='Подходящее фото пока не найдено: '+title;
+          }
+        }catch(e){
+          img.dataset.photoStatus='error';
+          img.style.background='#dce7f0';
+          img.title='Не удалось загрузить фото для: '+title;
+        }
+      }
+    }
+    await Promise.all(Array.from({length:4},worker));
+    document.documentElement.dataset.recipePhotos='processed';
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run);
+  else run();
 })();
 </script>
 </body></html>
