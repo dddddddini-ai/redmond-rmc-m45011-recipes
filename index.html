@@ -141,6 +141,30 @@ main.show-recipes .intro{display:flex}
   .category-card:hover img,.card:hover{transform:none}
 }
 
+
+/* Hero category pills: frosted glass, soft glow and tactile hover */
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px;max-width:760px}
+.hero-actions .pill.hero-filter{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:43px;padding:9px 18px;margin:0;
+  border:1px solid rgba(222,240,255,.58);border-radius:999px;
+  color:#f7fbff;background:linear-gradient(135deg,rgba(223,241,255,.22),rgba(28,76,117,.62));
+  box-shadow:0 5px 18px rgba(2,17,33,.20),inset 0 1px 0 rgba(255,255,255,.22);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  font-size:14px;font-weight:650;letter-spacing:.01em;
+  cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,background .22s ease,border-color .22s ease;
+}
+.hero-actions .pill.hero-filter:hover{
+  transform:translateY(-3px);
+  border-color:rgba(255,255,255,.95);
+  background:linear-gradient(135deg,rgba(226,243,255,.38),rgba(36,103,157,.82));
+  box-shadow:0 10px 26px rgba(2,17,33,.30),0 0 18px rgba(163,211,246,.25),inset 0 1px 0 rgba(255,255,255,.35);
+}
+.hero-actions .pill.hero-filter:active{transform:translateY(-1px) scale(.98)}
+.hero-actions .pill.hero-filter:focus-visible{outline:3px solid #d8edff;outline-offset:3px}
+@media(max-width:560px){.hero-actions{gap:8px;margin-top:21px}.hero-actions .pill.hero-filter{min-height:40px;padding:8px 14px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){.hero-actions .pill.hero-filter{transition:none}.hero-actions .pill.hero-filter:hover{transform:none}}
+
 </style>
 </head>
 <body>
@@ -148,7 +172,14 @@ main.show-recipes .intro{display:flex}
 <div class="eyebrow">РЕЦЕПТЫ И ЗАГОТОВКИ • ТОЛЬКО ДЛЯ REDMOND RMC-M45011</div>
 <h1>Готовим с REDMOND RMC-M45011</h1>
 <p>Готовьте с удовольствием: выбирайте категорию и находите проверенные идеи именно для вашей мультиварки.</p>
-<div class="hero-actions"><a class="hero-cta" href="#categoryHome">Выбрать категорию ↓</a></div>
+<div class="hero-actions" aria-label="Категории рецептов">
+  <button class="pill hero-filter" data-filter="Супы">Супы</button>
+  <button class="pill hero-filter" data-filter="Вторые блюда">Вторые блюда</button>
+  <button class="pill hero-filter" data-filter="Выпечка">Выпечка</button>
+  <button class="pill hero-filter" data-filter="Десерты">Десерты</button>
+  <button class="pill hero-filter" data-filter="Заготовки">Заготовки</button>
+  <button class="pill hero-filter" data-filter="Тесто для мультиварки">Тесто</button>
+</div>
 </div></header>
 <nav aria-label="Главное меню"><div class="wrap navinner"><div class="brand">RMC<span>•</span>КУХНЯ</div><button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="mainTabs">☰ Меню</button><div class="tabs" id="mainTabs">
 <button class="tab active" data-filter="all">Все рецепты</button><button class="tab" data-filter="Супы">Супы</button><button class="tab" data-filter="Вторые блюда">Вторые блюда</button><button class="tab" data-filter="Выпечка">Выпечка</button><button class="tab" data-filter="Десерты">Десерты</button><button class="tab" data-filter="Заготовки">Заготовки</button><button class="tab" data-filter="Тесто для мультиварки">Тесто и выпечка RMC</button></div></div></nav>
