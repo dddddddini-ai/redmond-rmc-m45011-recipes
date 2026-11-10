@@ -285,6 +285,14 @@ main.show-recipes .intro{display:flex}
 function recipeImageFallback(img){if(!img)return;img.onerror=null;img.removeAttribute('src');img.style.background='#e7edf2';img.alt='Подходящее фото пока не найдено';}
 
 (function(){
+  // При обновлении страницы открываем её сверху, а не у старой позиции прокрутки.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  function resetPageScroll(){ window.scrollTo(0, 0); }
+  window.addEventListener('load', function(){ requestAnimationFrame(resetPageScroll); setTimeout(resetPageScroll, 120); });
+  window.addEventListener('pageshow', function(){ requestAnimationFrame(resetPageScroll); });
+})();
+
+(function(){
   function init(){
     const root=document;
     const cards=Array.from(root.querySelectorAll('.card'));
