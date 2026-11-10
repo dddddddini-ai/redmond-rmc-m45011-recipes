@@ -203,7 +203,7 @@ main.show-recipes .intro{display:flex}
 @media(prefers-reduced-motion:reduce){.hero-actions .pill.hero-filter{transition:none}.hero-actions .pill.hero-filter:hover{transform:none}}
 
  .photo-credit{padding:4px 12px 0;font-size:10px;line-height:1.35;color:#70849a;overflow-wrap:anywhere}.photo-credit a{color:#70849a;text-decoration:none}.photo-credit a:hover{text-decoration:underline}
-</style>
+.home-search{margin:0 0 24px;padding:18px 20px;background:#edf4fa;border:1px solid #d7e3ed;border-radius:16px;display:grid;grid-template-columns:1fr;gap:7px}.home-search label{font-weight:700;color:#173b60}.home-search input{width:100%;box-sizing:border-box;border:1px solid #c9d9e7;border-radius:12px;padding:14px 16px;font:inherit;font-size:16px;background:#fff;color:#173b60;outline-color:#6e9fc5}.home-search span{font-size:12px;color:#647a90}@media(max-width:760px){.home-search{padding:15px;margin-bottom:18px}.home-search input{min-width:0}}</style>
 </head>
 <body>
 <header><div class="wrap hero">
@@ -227,6 +227,7 @@ main.show-recipes .intro{display:flex}
 
 <section class="category-home" id="categoryHome">
   <div class="category-heading"><div><span class="eyebrow-blue">REDMOND RMC-M45011</span><h2>Выберите категорию</h2></div><p>Только рецепты и режимы для вашей мультиварки</p></div>
+  <div class="home-search"><label for="homeSearch">Быстрый поиск по всем рецептам</label><input id="homeSearch" type="search" placeholder="Например: борщ, курица, тесто, картофель…"><span>Ищет по названию, ингредиентам и описанию</span></div>
   <div class="category-grid">
     <button class="category-card" data-filter="Супы"><img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85" alt="Супы"><span>Супы</span></button>
     <button class="category-card" data-filter="Вторые блюда"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=85" alt="Вторые блюда"><span>Вторые блюда</span></button>
@@ -314,6 +315,7 @@ function recipeImageFallback(img){
     const menuButton=root.getElementById('navToggle');
     const menu=root.getElementById('mainTabs');
     const search=root.getElementById('search');
+    const homeSearch=root.getElementById('homeSearch');
     const typeSelect=root.getElementById('typeFilter');
     const difficultySelect=root.getElementById('difficultyFilter');
     const count=root.getElementById('resultsInfo');
@@ -420,6 +422,27 @@ function recipeImageFallback(img){
       });
     });
     if(search) search.addEventListener('input',applyFilters);
+    if(homeSearch){
+      homeSearch.addEventListener('input',function(){
+        showRecipes();
+        activeCategory='all';
+        tabs.forEach(function(t){t.classList.toggle('active',(t.getAttribute('data-filter')||'all')==='all');});
+        if(search) search.value=homeSearch.value;
+        const heading=root.getElementById('sectionTitle');
+        if(heading) heading.textContent=homeSearch.value.trim()?'Результаты поиска':'Все рецепты';
+        applyFilters();
+      });
+      homeSearch.addEventListener('keydown',function(ev){
+        if(ev.key==='Enter'){
+          showRecipes();
+          if(search) search.value=homeSearch.value;
+          activeCategory='all';
+          applyFilters();
+          const section=root.getElementById('recipeSection');
+          if(section) section.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      });
+    }
     if(typeSelect) typeSelect.addEventListener('change',applyFilters);
     if(difficultySelect) difficultySelect.addEventListener('change',applyFilters);
     root.querySelectorAll('.more').forEach(function(button){
